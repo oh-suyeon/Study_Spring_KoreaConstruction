@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="wk">
+	<insert id="create" parameterType="hashMap">
+		<selectKey order="BEFORE" keyProperty="wkNum" resultType="int">
+			SELECT NVL(MAX(wk_num),0) + 1 FROM wk
+		</selectKey>
+		<![CDATA[
+			INSERT INTO wk (
+				wk_num
+				,emp_num
+				,site_num
+				,in_dt
+				,out_dt
+			)
+			VALUES(
+				#{wkNum}
+				,#{empNum}
+				,#{siteNum}
+				,#{inDt}
+				,#{outDt}
+			)
+		]]>
+	</insert>
+	
+	<select id="selectDetail" parameterType="hashMap" resultType="hashMap">
+		<![CDATA[
+			SELECT wk_num	                      AS "wkNum"
+				   ,emp_num   					  AS "empNum"
+   				   ,site_num                      AS "siteNum"
+   				   ,TO_CHAR(in_dt, 'yyyy-mm-dd')  AS "inDt"  
+   				   ,TO_CHAR(out_dt, 'yyyy-mm-dd') AS "outDt"  
+			FROM wk
+			WHERE wk_num = #{wkNum}
+		]]>
+	</select>
+	
+	<select id="selectList" parameterType="hashMap" resultType="hashMap">
+		<![CDATA[
+			SELECT ROW_NUMBER() OVER (ORDER BY wk_num DESC) rnum
+				   ,wk_num   					  AS "wkNum"
+				   ,emp_num   					  AS "empNum"
+   				   ,site_num                      AS "siteNum"
+   				   ,TO_CHAR(in_dt, 'yyyy-mm-dd')  AS "inDt"  
+   				   ,TO_CHAR(out_dt, 'yyyy-mm-dd') AS "outDt"  
+			FROM wk
+			WHERE 1=1
+		]]>
+		<if test="keyword!=null and keyword!=''">
+			AND emp_num 	LIKE '%' || #{keyword} || '%' 
+			 OR site_num 	LIKE '%' || #{keyword} || '%' 
+		</if>
+	</select>
+
+	<select id="count" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) 
+		FROM wk
+		WHERE 1 = 1
+		<if test="keyword!=null and keyword!=''">
+			AND emp_num 	LIKE '%' || #{keyword} || '%' 
+			 OR site_num 	LIKE '%' || #{keyword} || '%' 
+		</if>
+	</select>
+	
+	<select id="selectListPage" parameterType="hashMap" resultType="hashMap">
+		SELECT * 
+		FROM (
+				SELECT ROW_NUMBER() OVER (ORDER BY wk_num DESC) rnum
+				   ,wk_num   					  AS "wkNum"
+				   ,emp_num   					  AS "empNum"
+   				   ,site_num                      AS "siteNum"
+   				   ,TO_CHAR(in_dt, 'yyyy-mm-dd')  AS "inDt"  
+   				   ,TO_CHAR(out_dt, 'yyyy-mm-dd') AS "outDt"  
+				FROM wk
+				WHERE 1=1
+				<if test="keyword!=null and keyword!=''">
+					AND emp_num 	LIKE '%' || #{keyword} || '%' 
+					 OR site_num 	LIKE '%' || #{keyword} || '%' 
+				</if>
+			)
+		WHERE rnum BETWEEN #{start} AND #{end}
+	</select>
+
+	<update id="update" parameterType="hashMap">
+		<![CDATA[
+			UPDATE wk
+			SET 
+			    wk_num    	 = #{wkNum} 
+			    ,emp_num     = #{empNum}   
+			    ,site_num    = #{siteNum}   
+			    ,in_dt       = #{inDt}     
+			    ,out_dt      = #{outDt}  
+			WHERE wk_num  	 = #{wkNum}
+		]]>
+	</update>
+	
+	<delete id="delete" parameterType="hashMap">
+		<![CDATA[
+			DELETE FROM wk
+			WHERE wk_num = #{wkNum}
+		]]>
+	</delete>
+</mapper>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="siteMat">
+	<insert id="create" parameterType="hashMap">
+		<selectKey order="BEFORE" keyProperty="matNmCd" resultType="int">
+			SELECT NVL(MAX(mat_nm_cd),0) + 1 FROM site_mat
+		</selectKey>
+		<![CDATA[
+			INSERT INTO site_mat (
+				site_num
+				,mat_nm_cd
+				,pur_dt
+				,cnt
+				,pur_pri
+			)
+			VALUES( 
+				#{siteNum}
+				,#{matNmCd}
+				,#{purDt}
+				,#{cnt}
+				,#{purPri}
+			)
+		]]>
+	</insert>
+	
+	<!-- 선생님 따라하기 -->
+	<insert id="insert" parameterType="siteMatVo">
+		<![CDATA[
+			INSERT INTO site_mat (
+				site_num
+				,mat_nm_cd
+				,pur_dt
+				,cnt
+				,pur_pri
+			)
+			VALUES( 
+				#{siteNum}
+				,#{matNmCd}
+				,SYSDATE
+				,#{cnt}
+				,#{purPri}
+			)				
+		]]>
+	</insert>
+	
+	<!-- 선생님 따라하기 -->
+	<select id="selectDetail" parameterType="siteMatVo" resultType="hashMap">
+		<![CDATA[
+			SELECT site_num 	                       AS "siteNum"
+   				   ,mat_nm_cd                          AS "matNmCd"
+   				   ,TO_CHAR(pur_dt, 'yyyy-mm-dd')      AS "purDt"
+   				   ,cnt                                AS "cnt"
+   				   ,pur_pri                            AS "purPri"
+			FROM site_mat
+			WHERE mat_nm_cd = #{matNmCd} 
+			  AND site_num = #{siteNum}
+		]]>
+	</select>
+
+	<select id="selectDetail_" parameterType="hashMap" resultType="hashMap">
+		<![CDATA[
+			SELECT site_num 	                       AS "siteNum"
+   				   ,mat_nm_cd                          AS "matNmCd"
+   				   ,TO_CHAR(pur_dt, 'yyyy-mm-dd')      AS "purDt"
+   				   ,cnt                                AS "cnt"
+   				   ,pur_pri                            AS "purPri"
+			FROM site_mat
+			WHERE mat_nm_cd = #{matNmCd}
+		]]>
+	</select>
+	
+	<select id="selectList" parameterType="hashMap" resultType="hashMap">
+		<![CDATA[
+			SELECT ROW_NUMBER() OVER (ORDER BY mat_nm_cd DESC) rnum
+				   ,site_num 	                       AS "siteNum"
+   				   ,mat_nm_cd                          AS "matNmCd"
+   				   ,TO_CHAR(pur_dt, 'yyyy-mm-dd')      AS "purDt"
+   				   ,cnt                                AS "cnt"
+   				   ,pur_pri                            AS "purPri"
+			FROM site_mat
+			WHERE 1=1
+		]]>
+		<if test="keyword!=null and keyword!=''">
+			AND mat_nm_cd 	LIKE '%' || #{keyword} || '%' 
+			 OR site_num	LIKE '%' || #{keyword} || '%' 
+		</if>
+	</select>
+	
+	<select id="count" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) 
+		FROM site_mat
+		WHERE 1 = 1
+		<if test="keyword!=null and keyword!=''">
+			AND mat_nm_cd 	LIKE '%' || #{keyword} || '%' 
+			 OR site_num	LIKE '%' || #{keyword} || '%' 
+		</if>
+	</select>
+	
+	<select id="selectListPage" parameterType="hashMap" resultType="hashMap">
+		SELECT * 
+		FROM (
+				SELECT ROW_NUMBER() OVER (ORDER BY a.mat_nm_cd DESC) rnum
+				   ,a.site_num 	                       AS "siteNum"
+   				   ,a.mat_nm_cd                        AS "matNmCd"
+   				   ,TO_CHAR(a.pur_dt, 'yyyy-mm-dd')    AS "purDt"
+   				   ,a.cnt                              AS "cnt"
+   				   ,a.pur_pri                          AS "purPri"
+   				   ,b.item_nm 						   AS "itemNm"
+   				   ,c.site_nm						   AS "siteNm"
+				FROM site_mat a, con_mat_info b, site c 
+				WHERE a.mat_nm_cd = b.mat_nm_cd 
+				    AND a.site_num = c.site_num  
+				<if test="keyword!=null and keyword!=''">
+					AND a.mat_nm_cd 	LIKE '%' || #{keyword} || '%' 
+					 OR a.site_num		LIKE '%' || #{keyword} || '%' 
+				</if>
+			)
+		WHERE rnum BETWEEN #{start} AND #{end}
+	</select>
+
+	<update id="update" parameterType="hashMap">
+		<![CDATA[
+			UPDATE site_mat
+			SET 
+			    site_num 	 = #{siteNum} 
+			    ,pur_dt      = #{purDt}   
+			    ,cnt         = #{cnt}     
+			    ,pur_pri     = #{purPri}  
+			WHERE mat_nm_cd  = #{matNmCd}
+		]]>
+	</update>
+	
+	<delete id="delete" parameterType="hashMap">
+		<![CDATA[
+			DELETE FROM site_mat
+			WHERE mat_nm_cd = #{matNmCd}
+		]]>
+	</delete>
+</mapper>

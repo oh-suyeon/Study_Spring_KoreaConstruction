@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="conMatInfo">
+	
+	<select id="selectList" parameterType="hashMap" resultType="conMatInfoVo">
+		<![CDATA[
+			SELECT ROW_NUMBER() OVER (ORDER BY mat_nm_cd) rnum
+					, mat_nm_cd	AS "matNmCd"
+					, item_nm	AS "itemNm"
+			FROM con_mat_info
+			WHERE 1=1
+		]]>
+		<if test="keyword!=null and keyword!=''">
+			AND mat_nm_cd   LIKE '%' || #{keyword} || '%' 
+			 OR item_nm 	LIKE '%' || #{keyword} || '%' 
+		</if>
+	</select>
+
+	<select id="count" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) 
+		FROM con_mat_info
+		WHERE 1 = 1
+		<if test="keyword!=null and keyword!=''">
+			AND mat_nm_cd   LIKE '%' || #{keyword} || '%' 
+			 OR item_nm 	LIKE '%' || #{keyword} || '%' 
+		</if>
+	</select>
+	
+	<select id="selectListPage" parameterType="hashMap" resultType="hashMap">
+		SELECT * 
+		FROM (
+				SELECT ROW_NUMBER() OVER (ORDER BY emp_num DESC) rnum
+					, emp_num	AS "empNum"
+					, emp_nm 	AS "empNm"
+					, zip_code  AS "zipCode"
+					, addr1     AS "addr1"
+					, addr2     AS "addr2"
+					, phn_num   AS "phnNum"
+					, pos       AS "pos"
+					, dept_nm   AS "deptNm"
+				FROM emp
+				WHERE 1 = 1
+				<if test="keyword!=null and keyword!=''">
+					AND emp_nm  LIKE '%' || #{keyword} || '%' 
+					 OR pos 	LIKE '%' || #{keyword} || '%' 
+					 OR dept_nm LIKE '%' || #{keyword} || '%' 
+				</if>
+			)
+		WHERE rnum BETWEEN #{start} AND #{end}
+	</select>
+
+</mapper>

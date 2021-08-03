@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<!-- 스프링에서 '_'를 사용한 컬럼명 사용 시 mapUnderscoureToCamelCase를 사용하여 컬럼명에 '_'가 있을 경우 카멜ㅋ이스로 읽어줌.  -->
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+	</settings>
+	
+	<typeAliases>
+		<typeAlias type="kr.or.ddit.emp.vo.EmpVO" alias="empVo"/>
+		<typeAlias type="kr.or.ddit.site.vo.SiteVO" alias="siteVo"/>
+		<typeAlias type="kr.or.ddit.siteMat.vo.SiteMatVO" alias="siteMatVo"/>
+		<typeAlias type="kr.or.ddit.wk.vo.WkVO" alias="wkVo"/>
+		<typeAlias type="kr.or.ddit.conMatInfo.vo.ConMatInfoVO" alias="conMatInfoVo"/>
+		<typeAlias type="kr.or.ddit.common.vo.PagingVO" alias="pagingVo"/>
+	</typeAliases>
+</configuration>

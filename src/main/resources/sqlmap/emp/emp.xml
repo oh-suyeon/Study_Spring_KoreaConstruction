@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="emp">
+	<insert id="create" parameterType="hashMap">
+		<selectKey order="BEFORE" keyProperty="empNum" resultType="int">
+			SELECT NVL(MAX(emp_num),0) + 1 FROM emp
+		</selectKey>
+		<![CDATA[
+			INSERT INTO emp (
+				emp_num
+				,emp_nm
+				,zip_code
+				,addr1
+				,addr2
+				,phn_num
+				,pos
+				,dept_nm
+			)
+			VALUES( 
+				#{empNum}
+				, #{empNm}
+				, #{zipCode}
+				, #{addr1}
+				, #{addr2}
+				, #{phnNum}
+				, #{pos}
+				, #{deptNm}
+			)
+		]]>
+	</insert>
+	
+	<!-- 선생님 따라하기 -->
+	<!-- selectKey로 empVo에 empNum가 set됨. (setEmpNum() 실행되기 때문) -->
+	<insert id="insert" parameterType="empVo">
+		<selectKey order="BEFORE" keyProperty="empNum" resultType="int">
+			SELECT NVL(MAX(emp_num),0) + 1 FROM emp
+		</selectKey>
+		<![CDATA[
+			INSERT INTO emp (
+				emp_num
+				,emp_nm
+				,zip_code
+				,addr1
+				,addr2
+				,phn_num
+				,pos
+				,dept_nm
+			)
+			VALUES( 
+				#{empNum}
+				, #{empNm}
+				, #{zipCode}
+				, #{addr1}
+				, #{addr2}
+				, #{phnNum}
+				, #{pos}
+				, #{deptNm}
+			)
+		]]>
+	</insert>
+	
+	<select id="selectDetail" parameterType="hashMap" resultType="hashMap">
+		<![CDATA[
+			SELECT emp_num		AS "empNum"
+					, emp_nm 	AS "empNm"
+					, zip_code  AS "zipCode"
+					, addr1     AS "addr1"
+					, addr2     AS "addr2"
+					, phn_num   AS "phnNum"
+					, pos       AS "pos"
+					, dept_nm   AS "deptNm"
+			FROM emp
+			WHERE EMP_NUM = #{empNum}
+		]]>
+	</select>
+	
+	<select id="selectList" parameterType="hashMap" resultType="hashMap">
+		<![CDATA[
+			SELECT ROW_NUMBER() OVER (ORDER BY emp_num DESC) rnum
+					, emp_num	AS "empNum"
+					, emp_nm 	AS "empNm"
+					, zip_code  AS "zipCode"
+					, addr1     AS "addr1"
+					, addr2     AS "addr2"
+					, phn_num   AS "phnNum"
+					, pos       AS "pos"
+					, dept_nm   AS "deptNm"
+			FROM emp
+			WHERE 1=1
+		]]>
+		<if test="keyword!=null and keyword!=''">
+			AND emp_nm  LIKE '%' || #{keyword} || '%' 
+			 OR pos 	LIKE '%' || #{keyword} || '%' 
+			 OR dept_nm LIKE '%' || #{keyword} || '%' 
+		</if>
+	</select>
+
+	<select id="count" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) 
+		FROM emp
+		WHERE 1 = 1
+		<if test="keyword!=null and keyword!=''">
+			AND emp_nm  LIKE '%' || #{keyword} || '%' 
+			 OR pos 	LIKE '%' || #{keyword} || '%' 
+			 OR dept_nm LIKE '%' || #{keyword} || '%' 
+		</if>
+	</select>
+	
+	<select id="selectListPage" parameterType="hashMap" resultType="hashMap">
+		SELECT * 
+		FROM (
+				SELECT ROW_NUMBER() OVER (ORDER BY emp_num DESC) rnum
+					, emp_num	AS "empNum"
+					, emp_nm 	AS "empNm"
+					, zip_code  AS "zipCode"
+					, addr1     AS "addr1"
+					, addr2     AS "addr2"
+					, phn_num   AS "phnNum"
+					, pos       AS "pos"
+					, dept_nm   AS "deptNm"
+				FROM emp
+				WHERE 1 = 1
+				<if test="keyword!=null and keyword!=''">
+					AND emp_nm  LIKE '%' || #{keyword} || '%' 
+					 OR pos 	LIKE '%' || #{keyword} || '%' 
+					 OR dept_nm LIKE '%' || #{keyword} || '%' 
+				</if>
+			)
+		WHERE rnum BETWEEN #{start} AND #{end}
+	</select>
+
+	<update id="update" parameterType="hashMap">
+		<![CDATA[
+			UPDATE emp
+			SET 
+			    emp_nm  	= #{empNm}  
+			    , zip_code  = #{zipCode}
+			    , addr1     = #{addr1}  
+			    , addr2     = #{addr2}  
+			    , phn_num   = #{phnNum} 
+			    , pos       = #{pos}    
+			    , dept_nm   = #{deptNm} 
+			WHERE emp_num = #{empNum}
+		]]>
+	</update>
+	
+	<delete id="delete" parameterType="hashMap">
+		<![CDATA[
+			DELETE FROM emp
+			WHERE emp_num = #{empNum}
+		]]>
+	</delete>
+</mapper>

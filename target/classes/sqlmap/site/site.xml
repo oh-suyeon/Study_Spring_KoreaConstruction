@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="site">
+	<insert id="create" parameterType="hashMap">
+		<selectKey order="BEFORE" keyProperty="siteNum" resultType="int">
+			SELECT NVL(MAX(site_num),0) + 1 FROM site
+		</selectKey>
+		<![CDATA[
+			INSERT INTO site (
+				site_num
+				,site_nm
+				,addr
+				,phn_num
+				,cont_amt
+				,in_peo
+				,st_dt
+				,ex_com_dt
+				,com_dt
+				,etc
+			)
+			VALUES( 
+				#{siteNum}
+				,#{siteNm}
+				,#{addr}
+				,#{phnNum}
+				,#{contAmt}
+				,#{inPeo}
+				,#{stDt}
+				,#{exComDt}
+				,#{comDt}
+				,#{etc}
+			)
+		]]>
+	</insert>
+	
+	<!-- 선생님 따라하기  -->
+	<!-- PK는 해당 년도 + 1씩 증가(3자리 수) -->
+	<insert id="insert" parameterType="siteVo">
+		<selectKey order="BEFORE" keyProperty="siteNum" resultType="int">
+			SELECT NVL(MAX(site_num), TO_CHAR(SYSDATE, 'yyyy') || '000') + 1 
+			FROM site
+			WHERE site_num LIKE TO_CHAR(SYSDATE, 'yyyy') || '%'
+		</selectKey>
+		<![CDATA[
+			INSERT INTO site (
+				site_num
+				,site_nm
+				,addr
+				,phn_num
+				,cont_amt
+				,in_peo
+				,st_dt
+				,ex_com_dt
+				,com_dt
+				,etc
+			)
+			VALUES( 
+				#{siteNum}
+				,#{siteNm}
+				,#{addr}
+				,#{phnNum}
+				,#{contAmt}
+				,#{inPeo}
+				,#{stDt}
+				,#{exComDt}
+				,#{comDt}
+				,#{etc}
+			)
+		]]>
+	</insert>
+	
+	<select id="selectDetail" parameterType="int" resultType="hashMap">
+		<![CDATA[
+			SELECT site_num  	AS "siteNum"
+				   ,site_nm     AS "siteNm"
+				   ,addr        AS "addr"
+				   ,phn_num     AS "phnNum"
+				   ,cont_amt    AS "contAmt"
+				   ,in_peo      AS "inPeo"
+				   ,TO_CHAR(st_dt, 'yyyy-mm-dd')       AS "stDt"
+				   ,TO_CHAR(ex_com_dt, 'yyyy-mm-dd')   AS "exComDt"
+				   ,TO_CHAR(com_dt, 'yyyy-mm-dd')      AS "comDt"
+				   ,etc         AS "etc"
+			FROM site
+			WHERE site_num = #{siteNum}
+		]]>
+	</select>
+	
+	<select id="selectList" parameterType="hashMap" resultType="hashMap">
+		<![CDATA[
+			SELECT ROW_NUMBER() OVER (ORDER BY site_num DESC) rnum
+				   ,site_num  	AS "siteNum"
+				   ,site_nm     AS "siteNm"
+				   ,addr        AS "addr"
+				   ,phn_num     AS "phnNum"
+				   ,cont_amt    AS "contAmt"
+				   ,in_peo      AS "inPeo"
+				   ,TO_CHAR(st_dt, 'yyyy-mm-dd')       AS "stDt"
+				   ,TO_CHAR(ex_com_dt, 'yyyy-mm-dd')   AS "exComDt"
+				   ,TO_CHAR(com_dt, 'yyyy-mm-dd')      AS "comDt"
+				   ,etc         AS "etc"
+			FROM site
+			WHERE 1=1
+		]]>
+		<if test="keyword!=null and keyword!=''">
+			AND site_nm LIKE '%' || #{keyword} || '%' 
+			 OR addr 	LIKE '%' || #{keyword} || '%' 
+			 OR etc		LIKE '%' || #{keyword} || '%' 
+		</if>
+	</select>
+
+	<select id="count" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) 
+		FROM site
+		WHERE 1 = 1
+		<if test="keyword!=null and keyword!=''">
+			AND site_nm LIKE '%' || #{keyword} || '%' 
+			 OR addr 	LIKE '%' || #{keyword} || '%' 
+			 OR etc		LIKE '%' || #{keyword} || '%' 
+		</if>
+	</select>
+	
+	<select id="selectListPage" parameterType="hashMap" resultType="hashMap">
+		SELECT * 
+		FROM (
+				SELECT ROW_NUMBER() OVER (ORDER BY site_num DESC) rnum
+				   ,site_num  	AS "siteNum"
+				   ,site_nm     AS "siteNm"
+				   ,addr        AS "addr"
+				   ,phn_num     AS "phnNum"
+				   ,cont_amt    AS "contAmt"
+				   ,in_peo      AS "inPeo"
+				   ,TO_CHAR(st_dt, 'yyyy-mm-dd')       AS "stDt"
+				   ,TO_CHAR(ex_com_dt, 'yyyy-mm-dd')   AS "exComDt"
+				   ,TO_CHAR(com_dt, 'yyyy-mm-dd')      AS "comDt"
+				   ,etc         AS "etc"
+				FROM site
+				WHERE 1=1
+				<if test="keyword!=null and keyword!=''">
+					AND site_nm LIKE '%' || #{keyword} || '%' 
+					 OR addr 	LIKE '%' || #{keyword} || '%' 
+					 OR etc		LIKE '%' || #{keyword} || '%' 
+				</if>
+			)
+		WHERE rnum BETWEEN #{start} AND #{end}
+	</select>
+
+
+	<update id="update" parameterType="hashMap">
+		<![CDATA[
+			UPDATE site
+			SET 
+			    site_num  	= #{siteNum}
+			    ,site_nm    = #{siteNm}
+			    ,addr       = #{addr}
+			    ,phn_num    = #{phnNum}
+			    ,cont_amt   = #{contAmt}
+			    ,in_peo     = #{inPeo}
+			    ,st_dt      = #{stDt}
+			    ,ex_com_dt  = #{exComDt}
+			    ,com_dt     = #{comDt}
+			    ,etc        = #{etc}
+			WHERE site_num  = #{siteNum}
+		]]>
+	</update>
+	
+	<delete id="delete" parameterType="hashMap">
+		<![CDATA[
+			DELETE FROM site
+			WHERE site_num = #{siteNum}
+		]]>
+	</delete>
+</mapper>
