@@ -127,6 +127,7 @@
 			    ,cnt         = #{cnt}     
 			    ,pur_pri     = #{purPri}  
 			WHERE mat_nm_cd  = #{matNmCd}
+			  AND site_num 	 = #{siteNum}
 		]]>
 	</update>
 	
@@ -134,6 +135,7 @@
 		<![CDATA[
 			DELETE FROM site_mat
 			WHERE mat_nm_cd = #{matNmCd}
+			  AND site_num 	= #{siteNum}
 		]]>
 	</delete>
 </mapper>

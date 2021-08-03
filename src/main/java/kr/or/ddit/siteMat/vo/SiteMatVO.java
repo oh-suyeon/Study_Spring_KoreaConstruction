@@ -5,14 +5,22 @@ import java.util.Date;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class SiteMatVO {
+	
 
+	private int matNum;
 	private int siteNum;
 	private String matNmCd;
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date purDt;
 	private long cnt;
 	private long purPri;
-	
+
+	public int getMatNum() {
+		return matNum;
+	}
+	public void setMatNum(int matNum) {
+		this.matNum = matNum;
+	}
 	public int getSiteNum() {
 		return siteNum;
 	}
@@ -43,10 +51,9 @@ public class SiteMatVO {
 	public void setPurPri(long purPri) {
 		this.purPri = purPri;
 	}
-	
 	@Override
 	public String toString() {
-		return "SiteMatVO [siteNum=" + siteNum + ", matNmCd=" + matNmCd + ", purDt=" + purDt
+		return "SiteMatVO [matNum=" + matNum + ", siteNum=" + siteNum + ", matNmCd=" + matNmCd + ", purDt=" + purDt
 				+ ", cnt=" + cnt + ", purPri=" + purPri + "]";
 	}
 	

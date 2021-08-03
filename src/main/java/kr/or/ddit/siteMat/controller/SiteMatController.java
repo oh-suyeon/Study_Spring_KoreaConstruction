@@ -148,8 +148,6 @@ public class SiteMatController {
 		mav.addObject("paging", vo);
 		mav.addObject("siteMatList", siteMatService.selectListPage(map));
 		
-		logger.info(">>>>>> : "+siteMatService.selectListPage(map));
-		
 		if(map.containsKey("keyword")) {
 			mav.addObject("keyword", map.get("keyword"));
 		}
@@ -158,9 +156,16 @@ public class SiteMatController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "/update/{matNmCd}", method = RequestMethod.GET)
-	public String update(@PathVariable("matNmCd") int matNmCd, Model model) {
-		Map<String, Object> siteMat = siteMatService.selectDetail_(matNmCd);
+	@RequestMapping(value = "/update/{siteNum}/{matNmCd}", method = RequestMethod.GET)
+	public String update(@PathVariable("siteNum") int siteNum, @PathVariable("matNmCd") String matNmCd, Model model) {
+		SiteMatVO siteMatVo = new SiteMatVO();
+		siteMatVo.setSiteNum(siteNum);
+		siteMatVo.setMatNmCd(matNmCd);
+
+		List<ConMatInfoVO> conMatInfoList = conMatInfoService.selectList(new HashMap<>());
+		model.addAttribute("conMatInfoList", conMatInfoList);
+
+		Map<String, Object> siteMat = siteMatService.selectDetail(siteMatVo);
 		model.addAttribute("siteMat", siteMat);
 		return "siteMat/update";
 	}
@@ -169,9 +174,9 @@ public class SiteMatController {
 	public String update(@RequestParam Map<String, Object> map, Model model) {
 		int result = siteMatService.update(map);
 		if(result > 0) {
-			return "redirect:/siteMat/detail/"+map.get("matNmCd");
+			return "redirect:/siteMat/detail/" + map.get("siteNum") + "/"+map.get("matNmCd");
 		}
-		return "redirect:/siteMat/update/"+map.get("matNmCd");
+		return "redirect:/siteMat/update/" + map.get("siteNum") + "/"+map.get("matNmCd");
 	}
 
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
@@ -180,6 +185,6 @@ public class SiteMatController {
 		if(result > 0) {
 			return "redirect:/siteMat/list/";
 		}
-		return "redirect:/siteMat/detail/"+ map.get("matNmCd");
+		return "redirect:/siteMat/detail/" + map.get("siteNum") + "/"+map.get("matNmCd");
 	}
 }

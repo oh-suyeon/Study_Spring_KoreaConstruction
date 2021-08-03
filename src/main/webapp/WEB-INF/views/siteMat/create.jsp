@@ -38,7 +38,7 @@
 			<button type="button" id="siteNumList">검색</button>
 		</p>
 		<p>
-			자재 코드 : 
+			자재 명 : 
 			<select name="matNmCd">
 				<c:forEach var="conMatInfo" items="${conMatInfoList}">
 					<option value="${conMatInfo.matNmCd}">${conMatInfo.itemNm}</option>
