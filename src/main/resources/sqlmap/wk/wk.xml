@@ -22,27 +22,36 @@
 			)
 		]]>
 	</insert>
+
+	<insert id="insert" parameterType="wkVo">
+		<![CDATA[
+			INSERT INTO wk (
+				emp_num
+				,site_num
+			)
+			VALUES(
+				#{empNum}
+				,#{siteNum}
+			)
+		]]>
+	</insert>
+	
 	
 	<select id="selectDetail" parameterType="hashMap" resultType="hashMap">
 		<![CDATA[
-			SELECT wk_num	                      AS "wkNum"
-				   ,emp_num   					  AS "empNum"
+			SELECT emp_num   					  AS "empNum"
    				   ,site_num                      AS "siteNum"
-   				   ,TO_CHAR(in_dt, 'yyyy-mm-dd')  AS "inDt"  
-   				   ,TO_CHAR(out_dt, 'yyyy-mm-dd') AS "outDt"  
 			FROM wk
-			WHERE wk_num = #{wkNum}
+			WHERE emp_num = #{empNum}
+			  AND site_num = #{siteNum}
 		]]>
 	</select>
 	
 	<select id="selectList" parameterType="hashMap" resultType="hashMap">
 		<![CDATA[
-			SELECT ROW_NUMBER() OVER (ORDER BY wk_num DESC) rnum
-				   ,wk_num   					  AS "wkNum"
+			SELECT ROW_NUMBER() OVER (ORDER BY site_num, emp_num DESC) rnum
 				   ,emp_num   					  AS "empNum"
    				   ,site_num                      AS "siteNum"
-   				   ,TO_CHAR(in_dt, 'yyyy-mm-dd')  AS "inDt"  
-   				   ,TO_CHAR(out_dt, 'yyyy-mm-dd') AS "outDt"  
 			FROM wk
 			WHERE 1=1
 		]]>
@@ -65,12 +74,9 @@
 	<select id="selectListPage" parameterType="hashMap" resultType="hashMap">
 		SELECT * 
 		FROM (
-				SELECT ROW_NUMBER() OVER (ORDER BY wk_num DESC) rnum
-				   ,wk_num   					  AS "wkNum"
+				SELECT ROW_NUMBER() OVER (ORDER BY site_num, emp_num DESC) rnum
 				   ,emp_num   					  AS "empNum"
    				   ,site_num                      AS "siteNum"
-   				   ,TO_CHAR(in_dt, 'yyyy-mm-dd')  AS "inDt"  
-   				   ,TO_CHAR(out_dt, 'yyyy-mm-dd') AS "outDt"  
 				FROM wk
 				WHERE 1=1
 				<if test="keyword!=null and keyword!=''">
@@ -85,19 +91,18 @@
 		<![CDATA[
 			UPDATE wk
 			SET 
-			    wk_num    	 = #{wkNum} 
-			    ,emp_num     = #{empNum}   
+			    emp_num      = #{empNum}   
 			    ,site_num    = #{siteNum}   
-			    ,in_dt       = #{inDt}     
-			    ,out_dt      = #{outDt}  
-			WHERE wk_num  	 = #{wkNum}
+			WHERE emp_num  	 = #{empNum}
+			  AND site_num 	 = #{siteNum}
 		]]>
 	</update>
 	
 	<delete id="delete" parameterType="hashMap">
 		<![CDATA[
 			DELETE FROM wk
-			WHERE wk_num = #{wkNum}
+			WHERE emp_num  = #{empNum}
+			  AND site_num = #{siteNum}
 		]]>
 	</delete>
 </mapper>

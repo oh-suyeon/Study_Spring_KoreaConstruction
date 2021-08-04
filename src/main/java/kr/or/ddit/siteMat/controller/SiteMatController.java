@@ -98,12 +98,22 @@ public class SiteMatController {
 		return list;
 	}
 	
-	// 선생님 따라하기(사업장 번호, 사업장 명, 주소)
+	// 사업장 검색 리스트 출력
 	@RequestMapping(value = "/selectSite", method = RequestMethod.GET)
 	public String selectSite(Model model) {
 		List<Map<String, Object>> list = siteService.selectList(new HashMap<>());
 		model.addAttribute("list", list);
-		logger.info(">>>>>>>>>>>>> list : " + list.toString());
+		return "siteMat/selectSite";
+	}
+	
+	// 사업장 검색 하기
+	@RequestMapping(value = "/selectSite", method = RequestMethod.POST)
+	public String selectSitePost(@RequestParam Map<String, Object> map, Model model) {
+		List<Map<String, Object>> list = siteService.selectList(map);
+		model.addAttribute("list", list);
+		if(map.containsKey("keyword")) {
+			model.addAttribute("keyword", map.get("keyword"));
+		}
 		return "siteMat/selectSite";
 	}
 	
@@ -124,7 +134,7 @@ public class SiteMatController {
 		return "siteMat/list";
 	}
 	
-	@RequestMapping(value = "/list")
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public ModelAndView listPage(PagingVO vo, @RequestParam Map<String, Object> map) {
 		
 		ModelAndView mav = new ModelAndView();
@@ -151,6 +161,37 @@ public class SiteMatController {
 		if(map.containsKey("keyword")) {
 			mav.addObject("keyword", map.get("keyword"));
 		}
+		mav.setViewName("siteMat/listPaging");
+		
+		return mav;
+	}
+	
+	@RequestMapping(value = "/list", method = RequestMethod.POST)
+	public ModelAndView listPagePost(PagingVO vo, @RequestParam Map<String, Object> map) {
+		
+		ModelAndView mav = new ModelAndView();
+
+		int total = siteMatService.count(map);
+		int nowPage = 1;
+		int cntPerPage = 5;
+		
+		if(map.containsKey("nowPage")) {
+			nowPage = Integer.valueOf((String)map.get("nowPage"));
+		}
+		if(map.containsKey("cntPerPage")) {
+			cntPerPage = Integer.valueOf((String)map.get("cntPerPage"));
+		}
+		
+		vo = new PagingVO(total, nowPage, cntPerPage);
+		
+		map.put("start", vo.getStart());
+		map.put("end", vo.getEnd());
+		
+		mav.addObject("caseWhere", map.get("caseWhere"));
+		mav.addObject("keyword", map.get("keyword"));
+		mav.addObject("siteMatList", siteMatService.selectListPage(map));
+		mav.addObject("paging", vo);
+
 		mav.setViewName("siteMat/listPaging");
 		
 		return mav;

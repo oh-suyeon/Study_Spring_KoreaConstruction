@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 <mapper namespace="siteMat">
+
+	<resultMap type="hashMap" id="siteMatJoin">
+		<result property="siteNum" 	column="site_num" /> 	                    
+		<result property="matNmCd"  column="mat_nm_cd" />                     
+		<result property="purDt"    column="pur_dt"  />
+		<result property="cnt"      column="cnt" />                          
+		<result property="purPri"   column="pur_pri" />                       
+		<result property="itemNm" 	column="item_nm" />						
+		<result property="siteNm"	column="site_nm" />						
+	</resultMap>
+	
 	<insert id="create" parameterType="hashMap">
 		<selectKey order="BEFORE" keyProperty="matNmCd" resultType="int">
 			SELECT NVL(MAX(mat_nm_cd),0) + 1 FROM site_mat
@@ -26,20 +37,16 @@
 	<!-- 선생님 따라하기 -->
 	<insert id="insert" parameterType="siteMatVo">
 		<![CDATA[
-			INSERT INTO site_mat (
-				site_num
-				,mat_nm_cd
-				,pur_dt
-				,cnt
-				,pur_pri
-			)
-			VALUES( 
-				#{siteNum}
-				,#{matNmCd}
-				,SYSDATE
-				,#{cnt}
-				,#{purPri}
-			)				
+			MERGE INTO site_mat a
+			USING dual ON(a.site_num = #{siteNum} 
+						  AND a.mat_nm_cd = #{matNmCd})
+			WHEN MATCHED THEN
+			    UPDATE SET a.cnt 	 = a.cnt + #{cnt}
+			              ,a.pur_pri = a.pur_pri + #{purPri}
+			              ,a.pur_dt  = #{purDt}
+			WHEN NOT MATCHED THEN
+			    INSERT (site_num, mat_nm_cd, pur_dt, cnt, pur_pri)
+			    VALUES (#{siteNum}, #{matNmCd}, #{purDt}, #{cnt}, #{purPri})				
 		]]>
 	</insert>
 	
@@ -86,7 +93,7 @@
 		</if>
 	</select>
 	
-	<select id="count" parameterType="hashMap" resultType="int">
+	<select id="count_" parameterType="hashMap" resultType="int">
 		SELECT COUNT(*) 
 		FROM site_mat
 		WHERE 1 = 1
@@ -96,7 +103,35 @@
 		</if>
 	</select>
 	
-	<select id="selectListPage" parameterType="hashMap" resultType="hashMap">
+	<select id="count" parameterType="hashMap" resultType="int">
+		SELECT COUNT(aa.site_num) 
+        FROM (
+                SELECT a.site_num 	                       
+	                   ,a.mat_nm_cd                        
+	                   ,b.item_nm 						   
+	                   ,c.site_nm						   
+                FROM site_mat a, con_mat_info b, site c 
+                WHERE a.mat_nm_cd = b.mat_nm_cd 
+                    AND a.site_num = c.site_num
+            ) aa
+        WHERE 1=1
+		<if test="keyword!=null and keyword!=''">
+         	<choose>
+         		<when test="caseWhere=='all'">
+					AND aa.item_nm LIKE '%' || #{keyword} || '%' 
+					 OR aa.site_nm LIKE '%' || #{keyword} || '%' 
+         		</when>
+         		<when test="caseWhere=='siteNm'">
+					AND aa.site_nm LIKE '%' || #{keyword} || '%' 
+         		</when>
+         		<when test="caseWhere=='itemNm'">
+					AND aa.item_nm LIKE '%' || #{keyword} || '%' 
+         		</when>
+         	</choose>
+		</if>
+	</select>
+	
+	<select id="selectListPage_" parameterType="hashMap" resultType="hashMap">
 		SELECT * 
 		FROM (
 				SELECT ROW_NUMBER() OVER (ORDER BY a.mat_nm_cd DESC) rnum
@@ -116,6 +151,43 @@
 				</if>
 			)
 		WHERE rnum BETWEEN #{start} AND #{end}
+	</select>
+	
+	<!-- 검색 조건 추가-->
+	<select id="selectListPage" parameterType="hashMap" resultMap="siteMatJoin">
+		SELECT *
+			FROM (
+			        SELECT * 
+			        FROM (
+			                SELECT ROW_NUMBER() OVER (ORDER BY a.pur_dt DESC) rnum
+			                   ,a.site_num 	                       
+			                   ,a.mat_nm_cd                        
+			                   ,TO_CHAR(a.pur_dt, 'yyyy-mm-dd') pur_dt  
+			                   ,a.cnt                              
+			                   ,a.pur_pri                          
+			                   ,b.item_nm 						   
+			                   ,c.site_nm						   
+			                FROM site_mat a, con_mat_info b, site c 
+			                WHERE a.mat_nm_cd = b.mat_nm_cd 
+			                    AND a.site_num = c.site_num
+			            ) aa
+			        WHERE 1=1
+			         <if test="keyword!=null and keyword!=''">
+			         	<choose>
+			         		<when test="caseWhere=='all'">
+								AND aa.item_nm LIKE '%' || #{keyword} || '%' 
+								 OR aa.site_nm LIKE '%' || #{keyword} || '%' 
+			         		</when>
+			         		<when test="caseWhere=='siteNm'">
+								AND aa.site_nm LIKE '%' || #{keyword} || '%' 
+			         		</when>
+			         		<when test="caseWhere=='itemNm'">
+								AND aa.item_nm LIKE '%' || #{keyword} || '%' 
+			         		</when>
+			         	</choose>
+					</if>
+				) aaa
+			WHERE aaa.rnum BETWEEN #{start} AND #{end}
 	</select>
 
 	<update id="update" parameterType="hashMap">

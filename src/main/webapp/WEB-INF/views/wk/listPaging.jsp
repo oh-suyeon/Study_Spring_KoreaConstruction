@@ -35,30 +35,28 @@
 	
 	<table>
 		<colgroup>
-			<col style="width: 120px;">
-			<col style="width: 120px;">
 			<col style="width: auto;">
 			<col style="width: auto;">
 		</colgroup>
 		<thead>
 			<tr>
-				<th>근무 번호</th>
 				<th>사원 번호</th>
 				<th>사업장 번호</th>
-				<th>시작 일</th>
 			</tr>
 		</thead>
 		<tbody>
 			<c:forEach var="wk" items="${wkList}">
 				<tr>
 					<td>
-						<a href="/wk/detail/${wk.wkNum}">
-							${wk.wkNum}
+						<a href="/wk/detail/${wk.siteNum}/${wk.empNum}">
+							${wk.siteNum}
 						</a>
 					</td>
-					<td>${wk.empNum}</td>
-					<td>${wk.siteNum}</td>
-					<td>${wk.inDt}</td>
+					<td>
+						<a href="/wk/detail/${wk.siteNum}/${wk.empNum}">
+							${wk.empNum}
+						</a>
+					</td>
 				</tr>
 			</c:forEach>
 		</tbody>

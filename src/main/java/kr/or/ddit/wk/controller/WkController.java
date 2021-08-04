@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,6 +21,7 @@ import kr.or.ddit.common.vo.PagingVO;
 import kr.or.ddit.emp.service.EmpService;
 import kr.or.ddit.site.service.SiteService;
 import kr.or.ddit.wk.service.WkService;
+import kr.or.ddit.wk.vo.WkVO;
 
 @Controller
 @RequestMapping("/wk")
@@ -37,40 +39,58 @@ public class WkController {
 	SiteService siteService;
 	
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
-	public String create() {
+	public String create(Model model) {
 		logger.info(">>> wk/create");
+		List<Map<String, Object>> empList = empService.selectList(new HashMap<String, Object>());
+		List<Map<String, Object>> siteList = siteService.selectList(new HashMap<String, Object>());
+		
+		model.addAttribute("empList", empList);
+		model.addAttribute("siteList", siteList);
+		
 		return "wk/create";
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/getEmpNums")
-	public List<Map<String, Object>> getEmpNums(){
-		List<Map<String, Object>> empNumsList = empService.selectList(new HashMap<String, Object>());
+	@RequestMapping(value = "/getEmpDetail")
+	public Map<String, Object> getEmpDetail(@RequestParam Map<String, Object> map){
+		Map<String, Object> empDetail = empService.selectDetail(map);
+		return empDetail;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/getEmpList")
+	public List<Map<String, Object>> getEmpNums(@RequestParam Map<String, Object> map){
+		List<Map<String, Object>> empNumsList = empService.selectList(map);
 		return empNumsList;
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/getSiteNums")
-	public List<Map<String, Object>> getSiteNums(){
-		List<Map<String, Object>> siteNumsList = siteService.selectList(new HashMap<String, Object>());
+	@RequestMapping(value = "/getSiteList")
+	public List<Map<String, Object>> getSiteNums(@RequestParam Map<String, Object> map){
+		List<Map<String, Object>> siteNumsList = siteService.selectList(map);
 		return siteNumsList;
 	}
 	
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public String createPost(@RequestParam Map<String, Object> map) {
-		int result = wkService.create(map);
-		if(result > 0) {
-			return "redirect:/wk/detail/" + map.get("wkNum");
+	public String createPost(@ModelAttribute WkVO wkVo) {
+		WkVO result = wkService.create(wkVo);
+		if(result != null) {
+			return "redirect:/wk/detail/" + wkVo.getSiteNum() + "/" + wkVo.getEmpNum();
 		}
 		return "redirect:/wk/create";
 	}
 	
-	@RequestMapping(value = "/detail/{wkNum}", method = RequestMethod.GET)
-	public String detail(@PathVariable("wkNum") String wkNum, Model model) {
+	@RequestMapping(value = "/detail/{siteNum}/{empNum}", method = RequestMethod.GET)
+	public String detail(@PathVariable("siteNum") int siteNum, @PathVariable("empNum") int empNum, Model model) {
 		Map<String, Object> map = new HashMap<>();
-		map.put("wkNum", wkNum);
+		map.put("siteNum", siteNum);
+		map.put("empNum", empNum);
 		Map<String, Object> wk = wkService.selectDetail(map);
+		Map<String, Object> siteDetail = siteService.selectDetail(siteNum);
+		Map<String, Object> empDetail = empService.selectDetail(map);
 		model.addAttribute("wk", wk);
+		model.addAttribute("siteDetail", siteDetail);
+		model.addAttribute("empDetail", empDetail);
 		logger.info("wk : " + wk.toString());
 		return "wk/detail";
 	}

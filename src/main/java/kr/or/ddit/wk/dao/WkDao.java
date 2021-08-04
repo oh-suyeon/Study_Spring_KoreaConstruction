@@ -7,14 +7,16 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import kr.or.ddit.wk.vo.WkVO;
+
 @Repository
 public class WkDao {
 	
 	@Autowired
 	SqlSessionTemplate sqlSessionTemplate;
 	
-	public int create(Map<String, Object> map) {
-		return this.sqlSessionTemplate.insert("wk.create", map);
+	public int create(WkVO wkVo) {
+		return this.sqlSessionTemplate.insert("wk.insert", wkVo);
 	}
 	
 	public Map<String, Object> selectDetail(Map<String, Object> map){
@@ -26,11 +28,11 @@ public class WkDao {
 	}
 	
 	public int count(Map<String, Object> map) {
-		return sqlSessionTemplate.selectOne("wk.count", map);
+		return this.sqlSessionTemplate.selectOne("wk.count", map);
 	}
 	
 	public List<Map<String, Object>> selectListPage(Map<String, Object> map){
-		return sqlSessionTemplate.selectList("wk.selectListPage", map);
+		return this.sqlSessionTemplate.selectList("wk.selectListPage", map);
 	}
 	
 	public int update(Map<String, Object> map) {

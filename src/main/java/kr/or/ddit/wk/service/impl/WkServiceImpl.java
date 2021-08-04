@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import kr.or.ddit.wk.dao.WkDao;
 import kr.or.ddit.wk.service.WkService;
+import kr.or.ddit.wk.vo.WkVO;
 
 @Service
 public class WkServiceImpl implements WkService{
@@ -16,8 +17,12 @@ public class WkServiceImpl implements WkService{
 	WkDao wkDao;
 	
 	@Override
-	public int create(Map<String, Object> map) {
-		return wkDao.create(map);
+	public WkVO create(WkVO wkVo) {
+		int affectedRowCount = wkDao.create(wkVo);
+		if(affectedRowCount > 0) {
+			return wkVo;
+		}
+		return null;
 	}
 	
 	@Override

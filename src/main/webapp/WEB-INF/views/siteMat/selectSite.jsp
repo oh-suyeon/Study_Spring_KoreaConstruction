@@ -26,10 +26,30 @@
 		opener.document.getElementById("siteNum").value = p_siteNum;
 		self.close();
 	}
+	
+	function fn_chk() {
+		var txtSiteNm = document.getElementById("siteNm");
+		if(txtSiteNm.value==""){
+			alert("검색할 사업장 명을 입력해주세요.");
+			txtSiteNm.focus();
+			return false;
+		}
+		// if문을 통과하면 submit이 되도록 true를 리턴함
+		return true;
+	}
 </script>
 </head>
 <body>
 	<h2>사업장 검색</h2>
+
+	<!-- onsubmit : 폼이 submit되기 전에 함수 실행 -->
+	<form method="post" action="/siteMat/selectSite" onsubmit="return fn_chk();">
+		사업장 명 : <input id="siteNm" type="text" name="keyword" value="${keyword}"/> 
+		<input type="submit" value="검색" />
+	</form>
+	
+	<br />
+
 	<table>
 		<tr>
 			<th>사업장 번호</th>
@@ -44,5 +64,9 @@
 		</tr>
 	</c:forEach>
 	</table>
+	
+	<br />
+	
+	<input type="button" value="닫기" onclick="javascript:self.close();"/>
 </body>
 </html>

@@ -26,7 +26,17 @@
 	<h2>사업 자재 목록</h2>
 	
 	<form action="">
-		<input type="text" name="keyword" value="${keyword}" />
+		<input type="text" name="keyword" value="${keyword}" placeholder="기존  통합 검색 방식"/>
+		<input type="submit" value="검색" />
+	</form>
+	
+	<form action="/siteMat/list" method="post">
+		<select name="caseWhere">
+			<option value="all" 	<c:if test="${caseWhere == 'all'}"	 >selected</c:if> >전체	</option>
+			<option value="siteNm" 	<c:if test="${caseWhere == 'siteNm'}">selected</c:if> >사업장 명</option>
+			<option value="itemNm" 	<c:if test="${caseWhere == 'itemNm'}">selected</c:if> >자재 명	</option>
+		</select>
+		<input type="text" name="keyword" value="${keyword}"/>
 		<input type="submit" value="검색" />
 	</form>
 	
@@ -37,14 +47,14 @@
 		<colgroup>
 			<col style="width: 120px;">
 			<col style="width: auto;">
-			<col style="width: auto;">
-			<col style="width: auto;">
+			<col style="width: 200px;">
+			<col style="width: 120px;">
 		</colgroup>
 		<thead>
 			<tr>
 				<th>사업 자재 코드</th>
 				<th>자재 명</th>
-				<th>사업장 번호</th>
+				<th>사업장</th>
 				<th>구입 일</th>
 			</tr>
 		</thead>

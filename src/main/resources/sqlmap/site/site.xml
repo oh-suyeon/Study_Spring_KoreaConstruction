@@ -104,8 +104,8 @@
 		]]>
 		<if test="keyword!=null and keyword!=''">
 			AND site_nm LIKE '%' || #{keyword} || '%' 
-			 OR addr 	LIKE '%' || #{keyword} || '%' 
-			 OR etc		LIKE '%' || #{keyword} || '%' 
+<!-- 			 OR addr 	LIKE '%' || #{keyword} || '%'  -->
+<!-- 			 OR etc		LIKE '%' || #{keyword} || '%'  -->
 		</if>
 	</select>
 

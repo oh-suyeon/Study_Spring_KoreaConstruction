@@ -3,9 +3,11 @@ package kr.or.ddit.wk.service;
 import java.util.List;
 import java.util.Map;
 
+import kr.or.ddit.wk.vo.WkVO;
+
 public interface WkService {
 
-	public int create(Map<String, Object> map);
+	public WkVO create(WkVO wkVo);
 
 	public Map<String, Object> selectDetail(Map<String, Object> map);
 
