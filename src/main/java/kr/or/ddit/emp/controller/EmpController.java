@@ -9,16 +9,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import kr.or.ddit.emp.service.EmpService;
-import kr.or.ddit.emp.vo.EmpVO;
 import kr.or.ddit.common.vo.PagingVO;
+import kr.or.ddit.emp.service.EmpService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -55,7 +54,7 @@ public class EmpController {
 	
 	// 선생님 따라하기 ] 미리 선택지 넣어 놓기
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
-	public ModelAndView insert() {
+	public ModelAndView insert(@RequestParam Map<String, Object> map) {
 		ModelAndView mav = new ModelAndView();
 		
 		List<String> posList = new ArrayList<>(); // DB에서 끌어오는 게 정석
@@ -67,17 +66,25 @@ public class EmpController {
 		mav.addObject("posList", posList);
 		mav.addObject("deptNmList", deptNmList);
 		
+		if(map.containsKey("atPopup")) {
+			mav.addObject("atPopup", map.get("atPopup"));
+		}
+		
 		mav.setViewName("emp/create");
 		return mav;
 	}
 	
 	// 선생님 따라하기 ] VO 파라미터로 해보기
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public String insertPost(@ModelAttribute EmpVO empVo) {
-		log.info(">>>>> EmpVO 파라미터로 사용한 메서드 실행  : " + empVo);
-		int empNum = this.empService.insert(empVo);
-		if(empNum > 0) {
-			return "redirect:/emp/detail/" + empNum;
+	public String insertPost(@RequestParam Map<String, Object> map, Model model) {
+		int affectedRowCount = this.empService.create(map);
+		logger.info("create pop map >> " + map);
+		if(affectedRowCount > 0 && "true".equals(map.get("atPopup"))) {
+			return "emp/closePopup";
+		}
+		
+		if(affectedRowCount > 0) {
+			return "redirect:/emp/detail/" + map.get("empNum");
 		}else {
 			return "redirect:/emp/create";
 		}

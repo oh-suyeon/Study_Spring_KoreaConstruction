@@ -7,8 +7,6 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import kr.or.ddit.site.vo.SiteVO;
-
 @Repository
 public class SiteDao {
 	
@@ -20,10 +18,10 @@ public class SiteDao {
 	}
 	
 	// 선생님 따라 하기
-	public int insert(SiteVO siteVo) {
-		int affectedRowCount = this.sqlSessionTemplate.insert("site.insert", siteVo);
+	public int insert(Map<String, Object> map) {
+		int affectedRowCount = this.sqlSessionTemplate.insert("site.insert", map);
 		if(affectedRowCount > 0) {
-			return siteVo.getSiteNum();
+			return Integer.parseInt((String.valueOf(map.get("siteNum"))));
 		}
 		return 0;
 	}

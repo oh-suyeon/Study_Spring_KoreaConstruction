@@ -46,7 +46,9 @@
 				</c:forEach>
 			</select>
 		</p>
+		<input type="hidden" name="atPopup" value="${atPopup}">
 		<input type="submit" value="등록" />
+		<input type="button" value="닫기" onclick="javascript:self.close();"/>
 	</form>
 </body>
 </html>

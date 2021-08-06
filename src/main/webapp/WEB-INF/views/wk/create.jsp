@@ -4,36 +4,64 @@
 <html>
 <head>
 <title>근로 정보 등록</title>
-<script src="/resources/js/jquery-3.6.0.js"></script>
 <link href="/resources/style/default.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="/resources/js/jquery-ui-1.12.1.custom/jquery-ui.css">
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<script src="/resources/js/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
 
 <script type="text/javascript">
 	
+	$(function() {
+
+		// empInput 선생님 따라하기 (파라미터를 이렇게 가져올 수 있다.)
+		$(".trEmp").on("click", function(e) {
+			var varEmpNum = $(this).find("td:eq(0)").text();
+			var data = {"empNum" : varEmpNum}
+		});
+		
+		$("#wkStartDt").datepicker({
+				dateFormat: 'yy-mm-dd' 
+				,changeMonth: true
+				,changeYear: true
+				,dayNames: ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일']
+				,dayNamesMin: ['월','화','수','목','금','토','일']
+				,monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
+		}); // end daypicker
+		
+	}); // end $(function(){});
+	
+	
 	function empInput(empNum) {
 		$.ajax({
-			type: "GET"
+			type: "GET" // post로 던졌다면 @RequestBody로 받아야 함.
 			,data: {"empNum" : empNum}
 			,url: "/wk/getEmpDetail"
 			,dataType: "json"
 			,success: function (data) {
+				console.log(data);
+				$("#empNum").val(data.empNum);
 				$("#empNm").val(data.empNm);
-				$("#addr").val(data.zipCode + " " + data.addr1 + " " + data.addr2);
+				$("#addr").val("[" + data.zipCode + "] " + data.addr1 + " " + data.addr2);
 				$("#phnNum").val(data.phnNum);
 				$("#pos").val(data.pos);
 				$("#deptNm").val(data.deptNm);
 				$("#f_empNum").val(data.empNum)
-				console.log($("#f_empNum").val());
+				$("#m_empNm").val(data.empNm)
 			}
 			,error: function (xhr) {
 				console.log(xhr);
 			}
 		});
-	}
+	} // end empInput()
 
-	function siteInput(siteNum) {
-		$("#f_siteNum").val(siteNum)
+	function siteNumInput(siteNum) {
+		$("#f_siteNum").val(siteNum);
 		console.log($("#f_siteNum").val());
-	}
+	} // end siteNumInput()
+ 
+	function siteNmInput(siteNm) {
+		$("#m_siteNm").val(siteNm);
+	} // end siteNmInput()
 	
 	function empSearch() {
 		var keyword = $("#empKeyword").val()
@@ -47,7 +75,7 @@
 				$.each(data, function(idx, item) {
 					htmlStr += "<tr>"
 							+ " 	<td>"+ item.empNum +"</td>"
-							+ " 	<td onclick='empInput("+item.empNum+");' style='cursor: pointer;'>"
+							+ " 	<td onclick='empInput("+item.empNum+");' style='cursor: pointer;' class='hov'>"
 							+ 			item.empNm 
 							+ "		</td>"
 							+ " </tr>";
@@ -58,7 +86,7 @@
 				console.log(xhr);
 			}
 		});
-	}
+	} // end empSearch()
 
 	function siteSearch() {
 		var keyword = $("#siteKeyword").val()
@@ -72,7 +100,7 @@
 				$.each(data, function(idx, item) {
 					htmlStr += "<tr>"
 							+ " 	<td>"+ item.siteNum +"</td>"
-							+ " 	<td onclick='siteInput("+item.siteNum+");' style='cursor: pointer;'>"
+							+ " 	<td onclick='siteInput("+item.siteNum+");' style='cursor: pointer;' class='hov'>"
 							+ 			item.siteNm 
 							+ "		</td>"
 							+ " </tr>";
@@ -82,9 +110,77 @@
 			,error: function (xhr) {
 				console.log(xhr);
 			}
+		});	
+	} // end siteSearch()
+	
+	function empCreate() {
+		window.open("/emp/create?atPopup=true","owin","width=700,height=700");
+	} // end empCreate()
+	
+	function siteCreate() {
+		window.open("/site/create?atPopup=true","owin","width=700,height=900");
+	} // end siteCreate()
+	
+	function formSubmit() {
+		var frm = $("#frm");
+		
+		if($("#f_empNum").val()==""){
+			alert("사원을 입력하세요.");
+			return;
+		}
+		if($("#f_siteNum").val()==""){
+			alert("사업장을 입력하세요.");
+			return;
+		}
+		if($("#wkStartDt").val()==""){
+			alert("근무 시작일을 입력하세요.");
+			return;
+		}
+		frm.submit();
+	} // end formSubmit()
+	
+	function empDelete(empNum) {
+		if(!confirm("삭제하시겠습니까?")){
+			return;
+		}
+		var param = {"empNum" : empNum};
+		$.ajax({
+			type: "post"
+			,url: "/wk/deleteEmp"
+			,data: JSON.stringify(param)
+			,contentType: "application/json"
+			,cache: false
+			,success: function(data) {
+				console.log("data : " + data);
+				location.reload();
+			}
+			,error: function(xhr) {
+				console.log(xhr);
+			}
 		});
-	}
+	} // end empDelete()
 
+	function siteDelete(siteNum) {
+		if(!confirm("삭제하시겠습니까?")){
+			return;
+		}
+		var param = {"siteNum" : siteNum};
+		$.ajax({
+			type: "post"
+			,url: "/wk/deleteSite"
+			,data: JSON.stringify(param)
+			,contentType: "application/json"
+			,cache: false
+			,success: function(data) {
+				console.log("data : " + data);
+				location.reload();
+			}
+			,error: function(xhr) {
+				console.log(xhr);
+			}
+		});
+	} // end siteDelete()
+	
 </script>
 </head>
 <body>
@@ -94,38 +190,69 @@
 	
 		<div id="top">
 			<h3>사원 정보 상세</h3>
-			<p>
-				사원 명 : <input type="text" id="empNm" value="${empDetail.empNm}" readonly/>
-			</p>
-			<p>
-				주소 : <input type="text" id="addr" value="${empDetail.zipCode} ${empDetail.addr1} ${empDetail.addr2}" readonly/>
-			</p>
-			<p>
-				전화 번호 : <input type="text" id="phnNum" value="${empDetail.phnNum}" readonly/>
-			</p>
-			<p>
-				직급 : <input type="text" id="pos" value="${empDetail.pos}" readonly/>
-			</p>
-			<p>
-				부서 명 : <input type="text" id="deptNm" value="${empDetail.deptNm}" readonly/>
-			</p>
+			<table>
+				<tbody>
+					<tr>
+						<th>사원 번호</th>
+						<td>
+							<input type="text" id="empNum" readonly/>
+						</td>
+						<th>사원 명</th>
+						<td>
+							<input type="text" id="empNm" readonly/>
+						</td>
+					</tr>
+					<tr>
+						<th>주소</th>
+						<td>
+							<input type="text" id="addr" readonly/>
+						</td>
+						<th>전화번호</th>
+						<td>
+							<input type="text" id="phnNum" readonly/>
+						</td>
+					</tr>
+					<tr>
+						<th>직급</th>
+						<td>
+							<input type="text" id="pos" readonly/>
+						</td>
+						<th>부서명</th>
+						<td>
+							<input type="text" id="deptNm" readonly/>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
 		</div>
 		
-		<div id="left">
+		<hr />
+		
+		<div id="left" class="container">
 			<h3>사원 정보</h3>
 			<jsp:include page="/WEB-INF/views/wk/empList.jsp" />
 		</div>
 		
-		<div id="right">
+		<div id="right" class="container">
 			<h3>사업장 정보</h3>
 			<jsp:include page="/WEB-INF/views/wk/siteList.jsp" />
 		</div>
 		
-		<div id="foot">
-			<form action="/wk/create" method="post">
-				<input type="text" id="f_empNum" name="empNum" />
-				<input type="text" id="f_siteNum" name="siteNum" />
-				<button type="submit">등록</button>
+		<hr style="clear: both;" />
+		
+		<div id="bottom">
+			<h3>근무 정보 매핑</h3>
+			
+			<form action="/wk/create" method="post" id="frm">
+				사원 : 		<input type="text"  id="m_empNm" 	style="width:100px;" readonly />&nbsp;&nbsp;|&nbsp; 
+				사업장 : 		<input type="text" 	id="m_siteNm" 	style="width:100px;" readonly />&nbsp;&nbsp;|&nbsp; 
+				근무 시작일 : 	<input type="text"	id="wkStartDt" 	style="width:100px;" name="wkStartDt"/>
+				
+				<input type="hidden" id="f_empNum" 	name="empNum" />
+				<input type="hidden" id="f_siteNum" name="siteNum" />
+				
+				<button type="button" onclick="formSubmit();">등록</button>
 			</form>
 		</div>
 		

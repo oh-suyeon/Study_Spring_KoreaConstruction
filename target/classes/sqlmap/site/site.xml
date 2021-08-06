@@ -35,7 +35,7 @@
 	
 	<!-- 선생님 따라하기  -->
 	<!-- PK는 해당 년도 + 1씩 증가(3자리 수) -->
-	<insert id="insert" parameterType="siteVo">
+	<insert id="insert" parameterType="hashMap">
 		<selectKey order="BEFORE" keyProperty="siteNum" resultType="int">
 			SELECT NVL(MAX(site_num), TO_CHAR(SYSDATE, 'yyyy') || '000') + 1 
 			FROM site

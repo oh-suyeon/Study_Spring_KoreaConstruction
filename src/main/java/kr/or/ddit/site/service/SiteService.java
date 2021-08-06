@@ -3,13 +3,11 @@ package kr.or.ddit.site.service;
 import java.util.List;
 import java.util.Map;
 
-import kr.or.ddit.site.vo.SiteVO;
-
 public interface SiteService {
 
 	public int create(Map<String, Object> map);
 
-	public int insert(SiteVO siteVo);
+	public int insert(Map<String, Object> map);
 
 	public Map<String, Object> selectDetail(int siteNum);
 

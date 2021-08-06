@@ -39,6 +39,7 @@
 		<div style="width: 50%;">
 			비고 :<textarea name="etc" id="etc" rows="10" cols="50"></textarea> 
 		</div>
+		<input type="hidden" name="atPopup" value="${atPopup}" />
 		<input type="submit" value="등록" />
 	</form>
 

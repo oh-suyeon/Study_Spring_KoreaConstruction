@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -75,19 +76,18 @@ public class WkController {
 	public String createPost(@ModelAttribute WkVO wkVo) {
 		WkVO result = wkService.create(wkVo);
 		if(result != null) {
-			return "redirect:/wk/detail/" + wkVo.getSiteNum() + "/" + wkVo.getEmpNum();
+			return "redirect:/wk/detail/" + wkVo.getWkNum();
 		}
 		return "redirect:/wk/create";
 	}
 	
-	@RequestMapping(value = "/detail/{siteNum}/{empNum}", method = RequestMethod.GET)
-	public String detail(@PathVariable("siteNum") int siteNum, @PathVariable("empNum") int empNum, Model model) {
+	@RequestMapping(value = "/detail/{wkNum}", method = RequestMethod.GET)
+	public String detail(@PathVariable("wkNum") int wkNum, Model model) {
 		Map<String, Object> map = new HashMap<>();
-		map.put("siteNum", siteNum);
-		map.put("empNum", empNum);
+		map.put("wkNum", wkNum);
 		Map<String, Object> wk = wkService.selectDetail(map);
-		Map<String, Object> siteDetail = siteService.selectDetail(siteNum);
-		Map<String, Object> empDetail = empService.selectDetail(map);
+		Map<String, Object> siteDetail = siteService.selectDetail(Integer.parseInt(String.valueOf(wk.get("siteNum"))));
+		Map<String, Object> empDetail = empService.selectDetail(wk);
 		model.addAttribute("wk", wk);
 		model.addAttribute("siteDetail", siteDetail);
 		model.addAttribute("empDetail", empDetail);
@@ -123,8 +123,11 @@ public class WkController {
 		map.put("start", vo.getStart());
 		map.put("end", vo.getEnd());
 		
+		List<Map<String, Object>> wkList = wkService.selectListPage(map);
+		logger.info(">>>>> wkList : " + wkList);
+		
 		mav.addObject("paging", vo);
-		mav.addObject("wkList", wkService.selectListPage(map));
+		mav.addObject("wkList", wkList);
 		if(map.containsKey("keyword")) {
 			mav.addObject("keyword", map.get("keyword"));
 		}
@@ -134,11 +137,15 @@ public class WkController {
 	}
 	
 	@RequestMapping(value = "/update/{wkNum}", method = RequestMethod.GET)
-	public String update(@PathVariable("wkNum") String wkNum, Model model) {
+	public String update(@PathVariable("wkNum") int wkNum, Model model) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("wkNum", wkNum);
 		Map<String, Object> wk = wkService.selectDetail(map);
+		Map<String, Object> siteDetail = siteService.selectDetail(Integer.parseInt(String.valueOf(wk.get("siteNum"))));
+		Map<String, Object> empDetail = empService.selectDetail(wk);
 		model.addAttribute("wk", wk);
+		model.addAttribute("siteDetail", siteDetail);
+		model.addAttribute("empDetail", empDetail);
 		return "wk/update";
 	}
 	
@@ -160,5 +167,26 @@ public class WkController {
 		return "redirect:/wk/detail/" + map.get("wkNum");
 	}
 	
+	@ResponseBody
+	@RequestMapping(value = "/deleteEmp", method = RequestMethod.POST)
+	public int deleteEmp(@RequestBody Map<String, Object> map) {
+		logger.info(">> map empNum : " + map.get("empNum"));
+		int affectedRowCount = empService.delete(map);
+		if(affectedRowCount > 0) {
+			return Integer.parseInt(String.valueOf(map.get("empNum")));
+		}
+		return 0;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/deleteSite", method = RequestMethod.POST)
+	public int deleteSite(@RequestBody Map<String, Object> map) {
+		logger.info(">>>>>>>> map siteNum : " + map.get("siteNum"));
+		int affectedRowCount = siteService.delete(map);
+		if(affectedRowCount > 0) {
+			return Integer.parseInt(String.valueOf(map.get("siteNum")));
+		}
+		return 0;
+	}
 	
 }

@@ -40,21 +40,27 @@
 		</colgroup>
 		<thead>
 			<tr>
-				<th>사원 번호</th>
-				<th>사업장 번호</th>
+				<th>사업장 명</th>
+				<th>사원 명</th>
+				<th>근무 시작일</th>
 			</tr>
 		</thead>
 		<tbody>
 			<c:forEach var="wk" items="${wkList}">
 				<tr>
 					<td>
-						<a href="/wk/detail/${wk.siteNum}/${wk.empNum}">
-							${wk.siteNum}
+						<a>
+							${wk.siteNm}
 						</a>
 					</td>
 					<td>
-						<a href="/wk/detail/${wk.siteNum}/${wk.empNum}">
-							${wk.empNum}
+						<a href="/wk/detail/${wk.wkNum}">
+							${wk.empNm}
+						</a>
+					</td>
+					<td>
+						<a>
+							${wk.wkStartDt}
 						</a>
 					</td>
 				</tr>

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import kr.or.ddit.site.dao.SiteDao;
 import kr.or.ddit.site.service.SiteService;
-import kr.or.ddit.site.vo.SiteVO;
 
 @Service
 public class SiteServiceImpl implements SiteService{
@@ -22,8 +21,8 @@ public class SiteServiceImpl implements SiteService{
 	}
 	
 	@Override
-	public int insert(SiteVO siteVo) {
-		return siteDao.insert(siteVo);
+	public int insert(Map<String, Object> map) {
+		return siteDao.insert(map);
 	}
 	
 	@Override

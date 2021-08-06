@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,7 +16,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import kr.or.ddit.common.vo.PagingVO;
 import kr.or.ddit.site.service.SiteService;
-import kr.or.ddit.site.vo.SiteVO;
 
 @RequestMapping("/site")
 @Controller
@@ -50,22 +49,31 @@ public class SiteController {
 	
 	// 선생님 따라 하기 
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
-	public String insert() {
+	public String insert(@RequestParam Map<String, Object> map, Model model) {
+		if(map.containsKey("atPopup")) {
+			model.addAttribute("atPopup", map.get("atPopup"));
+		}
 		return "site/create";
 	}
 	
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public ModelAndView insertPost(ModelAndView mav, @ModelAttribute SiteVO siteVo) {
-		logger.info("siteVo : " + siteVo.toString());
-		int siteNum = this.siteService.insert(siteVo);
-		if(siteNum==0) {
-			mav.setViewName("redirect:/site/create");
-		}else{
-			mav.addObject("siteNum", siteNum);
+	public ModelAndView insertPost(ModelAndView mav, @RequestParam Map<String, Object> map) {
+		logger.info("siteVo : " + map.toString());
+		int siteNum = this.siteService.insert(map);
+		
+		if(siteNum>0 && "true".equals(map.get("atPopup"))) {
+			mav.setViewName("site/closePopup");
+			return mav;
+		}
+		
+		if(siteNum>0) {
 			mav.setViewName("redirect:/site/detail/" + siteNum);
+		}else{
+			mav.setViewName("redirect:/site/create");
 		}
 		return mav;
 	}
+	
 	
 	@RequestMapping(value = "/detail/{siteNum}", method = RequestMethod.GET)
 	public ModelAndView detail(@PathVariable("siteNum") int siteNum) {

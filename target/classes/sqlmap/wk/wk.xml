@@ -24,40 +24,52 @@
 	</insert>
 
 	<insert id="insert" parameterType="wkVo">
+		<selectKey order="BEFORE" keyProperty="wkNum" resultType="int">
+			SELECT NVL(MAX(wk_num),0) + 1 FROM wk
+		</selectKey>
 		<![CDATA[
 			INSERT INTO wk (
-				emp_num
+				wk_num
+				,emp_num
 				,site_num
+				,wk_start_dt
 			)
 			VALUES(
-				#{empNum}
+				#{wkNum}
+				,#{empNum}
 				,#{siteNum}
+				,#{wkStartDt}
 			)
 		]]>
 	</insert>
 	
-	
 	<select id="selectDetail" parameterType="hashMap" resultType="hashMap">
 		<![CDATA[
-			SELECT emp_num   					  AS "empNum"
-   				   ,site_num                      AS "siteNum"
+			SELECT wk_num								AS "wkNum"
+				   ,emp_num   					  		AS "empNum"
+   				   ,site_num                      		AS "siteNum"
+   				   ,TO_CHAR(wk_start_dt, 'yyyy-mm-dd') 	AS "wkStartDt"
 			FROM wk
-			WHERE emp_num = #{empNum}
-			  AND site_num = #{siteNum}
+			WHERE wk_num = #{wkNum}
 		]]>
 	</select>
 	
 	<select id="selectList" parameterType="hashMap" resultType="hashMap">
 		<![CDATA[
-			SELECT ROW_NUMBER() OVER (ORDER BY site_num, emp_num DESC) rnum
-				   ,emp_num   					  AS "empNum"
-   				   ,site_num                      AS "siteNum"
-			FROM wk
-			WHERE 1=1
+			SELECT ROW_NUMBER() OVER (ORDER BY a.wk_num DESC) rnum
+				   ,a.wk_num   						AS "wkNum"	
+				   ,a.emp_num   					AS "empNum"
+   				   ,a.site_num                      AS "siteNum"
+   				   ,TO_CHAR(a.wk_start_dt, 'yyyy-mm-dd') AS "wkStartDt"
+   				   ,b.emp_nm						AS "empNm"
+   				   ,c.site_nm 						AS "siteNm"
+			FROM wk a, emp b, site c
+			WHERE a.emp_num  = b.emp_num 
+			  AND a.site_num = c.site_num
 		]]>
 		<if test="keyword!=null and keyword!=''">
-			AND emp_num 	LIKE '%' || #{keyword} || '%' 
-			 OR site_num 	LIKE '%' || #{keyword} || '%' 
+			(AND a.emp_num 	LIKE '%' || #{keyword} || '%' 
+			  OR a.site_num LIKE '%' || #{keyword} || '%') 
 		</if>
 	</select>
 
@@ -74,14 +86,19 @@
 	<select id="selectListPage" parameterType="hashMap" resultType="hashMap">
 		SELECT * 
 		FROM (
-				SELECT ROW_NUMBER() OVER (ORDER BY site_num, emp_num DESC) rnum
-				   ,emp_num   					  AS "empNum"
-   				   ,site_num                      AS "siteNum"
-				FROM wk
-				WHERE 1=1
+				SELECT ROW_NUMBER() OVER (ORDER BY a.wk_num DESC) rnum
+				   ,a.wk_num   							 AS "wkNum"	
+				   ,a.emp_num   						 AS "empNum"
+   				   ,a.site_num                      	 AS "siteNum"
+   				   ,TO_CHAR(a.wk_start_dt, 'yyyy-mm-dd') AS "wkStartDt"
+   				   ,b.emp_nm							 AS "empNm"
+   				   ,c.site_nm 							 AS "siteNm"
+				FROM wk a, emp b, site c
+				WHERE a.emp_num  = b.emp_num 
+				  AND a.site_num = c.site_num
 				<if test="keyword!=null and keyword!=''">
-					AND emp_num 	LIKE '%' || #{keyword} || '%' 
-					 OR site_num 	LIKE '%' || #{keyword} || '%' 
+					(AND a.emp_num 	LIKE '%' || #{keyword} || '%' 
+					  OR a.site_num LIKE '%' || #{keyword} || '%') 
 				</if>
 			)
 		WHERE rnum BETWEEN #{start} AND #{end}
@@ -90,19 +107,17 @@
 	<update id="update" parameterType="hashMap">
 		<![CDATA[
 			UPDATE wk
-			SET 
-			    emp_num      = #{empNum}   
-			    ,site_num    = #{siteNum}   
-			WHERE emp_num  	 = #{empNum}
-			  AND site_num 	 = #{siteNum}
+			SET emp_num     = #{empNum}   
+			    ,site_num    = #{siteNum}
+			    ,wk_start_dt = #{wkStartDt}                
+			WHERE wk_num 	 = #{wkNum}
 		]]>
 	</update>
 	
 	<delete id="delete" parameterType="hashMap">
 		<![CDATA[
 			DELETE FROM wk
-			WHERE emp_num  = #{empNum}
-			  AND site_num = #{siteNum}
+			WHERE wk_num = #{wkNum}
 		]]>
 	</delete>
 </mapper>
