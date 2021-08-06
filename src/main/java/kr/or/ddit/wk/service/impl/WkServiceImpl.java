@@ -54,4 +54,14 @@ public class WkServiceImpl implements WkService{
 	public int delete(Map<String, Object> map) {
 		return wkDao.delete(map);
 	}
+	
+	@Override
+	public int countEmp(Map<String, Object> map) {
+		return wkDao.countEmp(map);
+	}
+
+	@Override
+	public int countSite(Map<String, Object> map) {
+		return wkDao.countSite(map);
+	}
 }

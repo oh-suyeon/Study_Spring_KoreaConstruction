@@ -1,0 +1,42 @@
+@charset "UTF-8";
+
+* {
+	font-size: 17px;
+}
+
+#header, #container, #footer {
+	width: 100%;
+	margin: 0px;
+}
+
+#header{
+	background-color: silver;
+	height: 100px;
+	float: left;
+}
+
+.tilesContainer{
+	height: 500px;
+/* 	display:flex; */
+}
+
+#body {
+	width: 70%;
+	height: 100vh;
+	margin-left: 10px;
+	float: left;
+	background-color: grey;
+}
+
+#aside {
+	width: 20%;
+	height: 100vh;
+	float: left;
+	background-color: lightgrey;
+}
+
+#footer {
+	background-color: darkgray;
+	float: left;
+	height: 100px;
+}

@@ -30,7 +30,7 @@
 			예상 완공일 : <input type="date" name="exComDt" value="${siteDetail.exComDt}"/>
 		</p>
 		<p>
-			완공일 : <input type="date" name="ComDt" value="${siteDetail.ComDt}"/>
+			완공일 : <input type="date" name="comDt" value="${siteDetail.ComDt}"/>
 		</p>
 		<p>
 			비고 : <input type="text" name="etc" value="${siteDetail.etc}"/>

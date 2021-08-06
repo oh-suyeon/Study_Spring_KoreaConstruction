@@ -46,6 +46,11 @@ public class SiteServiceImpl implements SiteService{
 	}
 	
 	@Override
+	public List<Map<String, Object>> selectListPage2(Map<String, Object> map) {
+		return siteDao.selectListPage2(map);
+	}
+	
+	@Override
 	public int update(Map<String, Object> map) {
 		return siteDao.update(map);
 	}

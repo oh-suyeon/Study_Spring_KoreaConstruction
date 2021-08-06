@@ -19,6 +19,8 @@ public interface EmpService {
 
 	public List<Map<String, Object>> selectListPage(Map<String, Object> map);
 
+	public List<Map<String, Object>> selectListPage2(Map<String, Object> map);
+
 	public int update(Map<String, Object> map);
 
 	public int delete(Map<String, Object> map);

@@ -68,6 +68,8 @@ public class EmpController {
 		
 		if(map.containsKey("atPopup")) {
 			mav.addObject("atPopup", map.get("atPopup"));
+			mav.setViewName("emp/popup/create");
+			return mav;
 		}
 		
 		mav.setViewName("emp/create");
@@ -80,7 +82,7 @@ public class EmpController {
 		int affectedRowCount = this.empService.create(map);
 		logger.info("create pop map >> " + map);
 		if(affectedRowCount > 0 && "true".equals(map.get("atPopup"))) {
-			return "emp/closePopup";
+			return "emp/popup/closePopup";
 		}
 		
 		if(affectedRowCount > 0) {

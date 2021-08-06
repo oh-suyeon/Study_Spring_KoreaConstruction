@@ -20,5 +20,8 @@ public interface WkService {
 	public int update(Map<String, Object> map);
 
 	public int delete(Map<String, Object> map);
-
+	
+	public int countEmp(Map<String, Object> map);
+	
+	public int countSite(Map<String, Object> map);
 }

@@ -45,8 +45,8 @@
 				$("#phnNum").val(data.phnNum);
 				$("#pos").val(data.pos);
 				$("#deptNm").val(data.deptNm);
-				$("#f_empNum").val(data.empNum)
-				$("#m_empNm").val(data.empNm)
+				$("#f_empNum").val(data.empNum);
+				$("#m_empNm").val(data.empNm);
 			}
 			,error: function (xhr) {
 				console.log(xhr);
@@ -152,6 +152,13 @@
 			,cache: false
 			,success: function(data) {
 				console.log("data : " + data);
+				if(data == 0){
+					alert("이미 근무 정보에 등록한 사원은 삭제할 수 없습니다.");
+				}else if(data == -1){
+					alert("시스템 상에 문제가 생겨 삭제하지 못했습니다.");
+				}else{
+					alert("삭제가 완료되었습니다.");
+				}
 				location.reload();
 			}
 			,error: function(xhr) {
@@ -173,6 +180,13 @@
 			,cache: false
 			,success: function(data) {
 				console.log("data : " + data);
+				if(data == 0){
+					alert("이미 근무 정보에 등록한 사업장은 삭제할 수 없습니다.");
+				}else if(data == -1){
+					alert("시스템 상에 문제가 생겨 삭제하지 못했습니다.");
+				}else{
+					alert("삭제가 완료되었습니다.");
+				}
 				location.reload();
 			}
 			,error: function(xhr) {
@@ -185,7 +199,6 @@
 </head>
 <body>
 	<h2>근로 정보 등록</h2>
-	
 	<div id="box">
 	
 		<div id="top">

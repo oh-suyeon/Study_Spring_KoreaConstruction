@@ -145,6 +145,31 @@
 		WHERE rnum BETWEEN #{start} AND #{end}
 	</select>
 
+	<select id="selectListPage2" parameterType="hashMap" resultType="hashMap">
+		SELECT * 
+		FROM (
+				SELECT ROW_NUMBER() OVER (ORDER BY site_num DESC) rnum
+				   ,site_num  	AS "siteNum"
+				   ,site_nm     AS "siteNm"
+				   ,addr        AS "addr"
+				   ,phn_num     AS "phnNum"
+				   ,cont_amt    AS "contAmt"
+				   ,in_peo      AS "inPeo"
+				   ,TO_CHAR(st_dt, 'yyyy-mm-dd')       AS "stDt"
+				   ,TO_CHAR(ex_com_dt, 'yyyy-mm-dd')   AS "exComDt"
+				   ,TO_CHAR(com_dt, 'yyyy-mm-dd')      AS "comDt"
+				   ,etc         AS "etc"
+				FROM site
+				WHERE 1=1
+				<if test="keyword!=null and keyword!=''">
+					AND site_nm LIKE '%' || #{keyword} || '%' 
+					 OR addr 	LIKE '%' || #{keyword} || '%' 
+					 OR etc		LIKE '%' || #{keyword} || '%' 
+				</if>
+			)
+		WHERE rnum BETWEEN (#{currentPageSite} * #{size} - (#{size} - 1)) AND (#{currentPageSite} * #{size})
+	</select>
+
 
 	<update id="update" parameterType="hashMap">
 		<![CDATA[

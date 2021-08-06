@@ -129,6 +129,29 @@
 		WHERE rnum BETWEEN #{start} AND #{end}
 	</select>
 
+	<select id="selectListPage2" parameterType="hashMap" resultType="hashMap">
+		SELECT * 
+		FROM (
+				SELECT ROW_NUMBER() OVER (ORDER BY emp_num DESC) rnum
+					, emp_num	AS "empNum"
+					, emp_nm 	AS "empNm"
+					, zip_code  AS "zipCode"
+					, addr1     AS "addr1"
+					, addr2     AS "addr2"
+					, phn_num   AS "phnNum"
+					, pos       AS "pos"
+					, dept_nm   AS "deptNm"
+				FROM emp
+				WHERE 1 = 1
+				<if test="keyword!=null and keyword!=''">
+					AND emp_nm  LIKE '%' || #{keyword} || '%' 
+					 OR pos 	LIKE '%' || #{keyword} || '%' 
+					 OR dept_nm LIKE '%' || #{keyword} || '%' 
+				</if>
+			)
+		WHERE rnum BETWEEN (#{currentPageEmp} * #{size} - (#{size} - 1)) AND (#{currentPageEmp} * #{size})
+	</select>
+
 	<update id="update" parameterType="hashMap">
 		<![CDATA[
 			UPDATE emp
@@ -150,4 +173,5 @@
 			WHERE emp_num = #{empNum}
 		]]>
 	</delete>
+	
 </mapper>

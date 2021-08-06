@@ -52,6 +52,8 @@ public class SiteController {
 	public String insert(@RequestParam Map<String, Object> map, Model model) {
 		if(map.containsKey("atPopup")) {
 			model.addAttribute("atPopup", map.get("atPopup"));
+			logger.info("popup >>> in");
+			return "site/popup/create";
 		}
 		return "site/create";
 	}
@@ -62,7 +64,7 @@ public class SiteController {
 		int siteNum = this.siteService.insert(map);
 		
 		if(siteNum>0 && "true".equals(map.get("atPopup"))) {
-			mav.setViewName("site/closePopup");
+			mav.setViewName("site/popup/closePopup");
 			return mav;
 		}
 		

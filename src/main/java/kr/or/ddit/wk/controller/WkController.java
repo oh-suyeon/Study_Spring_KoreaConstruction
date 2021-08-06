@@ -21,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 import kr.or.ddit.common.vo.PagingVO;
 import kr.or.ddit.emp.service.EmpService;
 import kr.or.ddit.site.service.SiteService;
+import kr.or.ddit.util.Pagination;
 import kr.or.ddit.wk.service.WkService;
 import kr.or.ddit.wk.vo.WkVO;
 
@@ -29,6 +30,8 @@ import kr.or.ddit.wk.vo.WkVO;
 public class WkController {
 
 	private static final Logger logger = LoggerFactory.getLogger(WkController.class);
+	private int size = 3;
+	
 	
 	@Autowired
 	WkService wkService;
@@ -40,13 +43,41 @@ public class WkController {
 	SiteService siteService;
 	
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
-	public String create(Model model) {
-		logger.info(">>> wk/create");
-		List<Map<String, Object>> empList = empService.selectList(new HashMap<String, Object>());
-		List<Map<String, Object>> siteList = siteService.selectList(new HashMap<String, Object>());
+	public String create(Model model, @RequestParam(defaultValue = "1") String currentPageEmp
+									, @RequestParam(defaultValue = "1") String currentPageSite) {
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("currentPageEmp", Integer.parseInt(currentPageEmp));
+		map.put("currentPageSite", Integer.parseInt(currentPageSite));
+		map.put("size", size);
+		logger.info(">>>>map cp : " + map);
+		List<Map<String, Object>> empList = empService.selectListPage2(map);
+		List<Map<String, Object>> siteList = siteService.selectListPage2(map);
+		
+		//pagination : 전체 게시글 개수, 사용자 요청 페이지, 페이지 크기
+		Pagination pagingEmp = new Pagination(empService.count(map), Integer.parseInt(currentPageEmp), size);
+		Pagination pagingSite = new Pagination(siteService.count(map), Integer.parseInt(currentPageSite), size);
+		
+		String pagingEmpStr = "";
+		//이전
+		if(pagingEmp.getStartPage() > size) {
+			pagingEmpStr += "<a href='/wk/create?currentPageEmp="+(pagingEmp.getStartPage() - 3)+"'>[&lt; 이전]</a>";
+		}
+		//페이지
+		for(int i = pagingEmp.getStartPage(); i<=pagingEmp.getEndPage(); i++){
+			pagingEmpStr += "<a href='/wk/create?currentPageEmp="+i+"'>[" + i + "]</a>";
+		}	
+		//다음
+		if(pagingEmp.getEndPage() < pagingEmp.getTotalPages()) {
+			pagingEmpStr += "<a href='/wk/create?currentPageEmp="+(pagingEmp.getStartPage() + 3)+"'>[다음 &gt;]</a>";
+		}
+
+		model.addAttribute("pagingEmpStr", pagingEmpStr);
 		
 		model.addAttribute("empList", empList);
 		model.addAttribute("siteList", siteList);
+		model.addAttribute("pagingEmp", pagingEmp);
+		model.addAttribute("pagingSite", pagingSite);
 		
 		return "wk/create";
 	}
@@ -171,6 +202,12 @@ public class WkController {
 	@RequestMapping(value = "/deleteEmp", method = RequestMethod.POST)
 	public int deleteEmp(@RequestBody Map<String, Object> map) {
 		logger.info(">> map empNum : " + map.get("empNum"));
+		
+		int countEmp = wkService.countEmp(map);
+		if(countEmp > 0) {
+			return 0;
+		}
+		
 		int affectedRowCount = empService.delete(map);
 		if(affectedRowCount > 0) {
 			return Integer.parseInt(String.valueOf(map.get("empNum")));
@@ -182,11 +219,17 @@ public class WkController {
 	@RequestMapping(value = "/deleteSite", method = RequestMethod.POST)
 	public int deleteSite(@RequestBody Map<String, Object> map) {
 		logger.info(">>>>>>>> map siteNum : " + map.get("siteNum"));
+		
+		int countSite = wkService.countSite(map);
+		if(countSite > 0) {
+			return 0;
+		}
+		
 		int affectedRowCount = siteService.delete(map);
 		if(affectedRowCount > 0) {
 			return Integer.parseInt(String.valueOf(map.get("siteNum")));
 		}
-		return 0;
+		return -1;
 	}
 	
 }

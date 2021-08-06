@@ -16,16 +16,17 @@ body {
 #top {
 	position: relative;
 /* 	background-color: gray; */
+	float:left;
 	height: 180px;
 	padding: 20px 10px 10px 20px;
-	width: 97%;
+	width: 80%;
 }
 
 #left {
 	position: relative;
 /* 	background-color: lightgray; */
 	float:left;
-	width: 46%;
+	width: 35%;
 	height: 350px;
 	margin-bottom: 20px;
 	padding: 20px 10px 10px 20px;
@@ -35,7 +36,7 @@ body {
 	position: relative;
 /* 	background-color: darkgray; */
 	float:left;
-	width: 46%;
+	width: 35%;
 	height: 350px;
 	margin-bottom: 20px;
 	padding: 20px 10px 10px 20px;

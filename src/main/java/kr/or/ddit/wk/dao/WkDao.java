@@ -42,4 +42,12 @@ public class WkDao {
 	public int delete(Map<String, Object> map) {
 		return this.sqlSessionTemplate.delete("wk.delete", map);
 	}
+	
+	public int countEmp(Map<String, Object> map) {
+		return this.sqlSessionTemplate.selectOne("wk.countEmp", map);
+	}
+	
+	public int countSite(Map<String, Object> map) {
+		return this.sqlSessionTemplate.selectOne("wk.countSite", map);
+	}
 }

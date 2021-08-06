@@ -41,6 +41,10 @@ public class SiteDao {
 	public List<Map<String, Object>> selectListPage(Map<String, Object> map){
 		return sqlSessionTemplate.selectList("site.selectListPage", map);
 	}
+
+	public List<Map<String, Object>> selectListPage2(Map<String, Object> map){
+		return sqlSessionTemplate.selectList("site.selectListPage2", map);
+	}
 	
 	public int update(Map<String, Object> map) {
 		return sqlSessionTemplate.update("site.update", map);

@@ -29,10 +29,18 @@
 					${emp.empNm}
 				</td>
 				<td>
-					<img class="icon" src="/resources/images/delete.png" alt="deleteIcon" 
+					<img class="icon" src="/resources/images/delete.png" alt="deleteIcon"
 						 onclick="empDelete(${emp.empNum});"/>
 				</td>
 			</tr>
 		</c:forEach>
+		<!-- Pagination -->
+		<tr>
+			<td colspan="3">
+				${pagingEmpStr}
+			</td>
+		</tr>
 	</tbody>
 </table>
+
+

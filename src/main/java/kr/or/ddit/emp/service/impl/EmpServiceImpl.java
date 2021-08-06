@@ -53,6 +53,11 @@ public class EmpServiceImpl implements EmpService{
 	}
 
 	@Override
+	public List<Map<String, Object>> selectListPage2(Map<String, Object> map) {
+		return empDao.selectListPage2(map);
+	}
+
+	@Override
 	public int update(Map<String, Object> map){
 		return empDao.update(map);
 	}

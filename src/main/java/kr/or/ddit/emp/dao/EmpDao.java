@@ -40,6 +40,10 @@ public class EmpDao {
 		return sqlSessionTemplate.selectList("emp.selectListPage", map);
 	}
 	
+	// 선생님 따라하기
+	public List<Map<String, Object>> selectListPage2(Map<String, Object> map){
+		return sqlSessionTemplate.selectList("emp.selectListPage2", map);
+	}
 	public int update(Map<String, Object> map) {
 		return sqlSessionTemplate.update("emp.update", map);
 	}

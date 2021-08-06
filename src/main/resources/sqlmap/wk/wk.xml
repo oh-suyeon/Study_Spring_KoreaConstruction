@@ -120,4 +120,18 @@
 			WHERE wk_num = #{wkNum}
 		]]>
 	</delete>
+	
+	<select id="countEmp" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) AS "cnt"
+		FROM wk
+		WHERE emp_num = #{empNum}
+	</select>
+
+	<select id="countSite" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) AS "cnt"
+		FROM wk
+		WHERE site_num = #{siteNum}
+	</select>
+	
+	
 </mapper>

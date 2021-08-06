@@ -37,5 +37,26 @@
 				</td>
 			</tr>
 		</c:forEach>
+		<tr>
+			<td colspan="4">
+				<!-- Pagination -->
+				<span>
+					<c:if test="${pagingSite.startPage > pagingSite.size}">
+						<a href="/wk/create?currentPageSite=${pagingSite.startPage - 3}">[&lt; 이전]</a>
+					</c:if>
+					
+					<c:forEach var="sitePage" begin="${pagingSite.startPage}" end="${pagingSite.endPage}">
+						<a href="/wk/create?currentPageSite=${sitePage}">[${sitePage}]</a>
+					</c:forEach>
+					
+					<c:if test="${pagingSite.endPage < pagingSite.totalPages}">
+						<a href="/wk/create?currentPageSite=${pagingSite.startPage + 3}">[다음 &gt;]</a>
+					</c:if>
+				</span>
+			</td>
+		</tr>
 	</tbody>
 </table>
+
+
+
