@@ -42,7 +42,8 @@
 				<!-- Pagination -->
 				<span>
 					<c:if test="${pagingSite.startPage > pagingSite.size}">
-						<a href="/wk/create?currentPageSite=${pagingSite.startPage - 3}">[&lt; 이전]</a>
+<%-- 						<a href="/wk/create?currentPageSite=${pagingSite.startPage - 3}">[&lt; 이전]</a> --%>
+						<button type="button" onclick="sitePaging(${pagingSite.startPage - 3})">이전</button>
 					</c:if>
 					
 					<c:forEach var="sitePage" begin="${pagingSite.startPage}" end="${pagingSite.endPage}">

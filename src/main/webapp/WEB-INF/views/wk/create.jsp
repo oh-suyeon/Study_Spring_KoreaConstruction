@@ -195,6 +195,11 @@
 		});
 	} // end siteDelete()
 	
+	function sitePaging(currentPage) {
+		var param = {'currentPageSite': currentPage}
+		console.log("sitePaging : " + currentPage);	
+	} // end sitePaging()
+	
 </script>
 </head>
 <body>
